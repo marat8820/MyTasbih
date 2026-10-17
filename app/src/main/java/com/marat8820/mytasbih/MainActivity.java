@@ -59,108 +59,143 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void buildUi() {
-        ScrollView scroll = new ScrollView(this);
-        scroll.setFillViewport(true);
-        scroll.setBackgroundColor(cream);
+   
+private void buildUi() {
+    cream = Color.rgb(12, 65, 49);
+    green = Color.rgb(232, 195, 105);
+    darkGreen = Color.rgb(7, 45, 34);
+    gold = Color.rgb(232, 195, 105);
+    ink = Color.rgb(255, 250, 236);
 
-        LinearLayout root = new LinearLayout(this);
-        root.setOrientation(LinearLayout.VERTICAL);
-        root.setGravity(Gravity.CENTER_HORIZONTAL);
-        root.setPadding(dp(22), dp(18), dp(22), dp(24));
-        scroll.addView(root);
+    ScrollView scroll = new ScrollView(this);
+    scroll.setFillViewport(true);
+    scroll.setBackgroundColor(cream);
 
-        TextView arabicTitle = text("مسبحتي", 32, green, true);
-        arabicTitle.setTypeface(Typeface.SERIF, Typeface.BOLD);
-        root.addView(arabicTitle, lp(-1, -2));
+    LinearLayout root = new LinearLayout(this);
+    root.setOrientation(LinearLayout.VERTICAL);
+    root.setGravity(Gravity.CENTER_HORIZONTAL);
+    root.setPadding(dp(18), dp(20), dp(18), dp(24));
+    scroll.addView(root);
 
-        TextView title = text("MY TASBIH", 22, green, true);
-        title.setLetterSpacing(0.18f);
-        title.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-        root.addView(title, lp(-1, -2));
+    TextView title = text("📿  МОЙ ТАСБИХ", 25, gold, true);
+    title.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+    root.addView(title, lp(-1, dp(48)));
 
-        TextView subtitle = text("Your daily dhikr companion", 14, ink, false);
-        subtitle.setPadding(0, dp(5), 0, dp(22));
-        root.addView(subtitle, lp(-1, -2));
+    TextView subtitle = text(
+            "Листайте влево или вправо, чтобы сменить зикр",
+            13, ink, true);
+    subtitle.setPadding(0, 0, 0, dp(18));
+    root.addView(subtitle, lp(-1, -2));
 
-        LinearLayout card = new LinearLayout(this);
-        card.setOrientation(LinearLayout.VERTICAL);
-        card.setGravity(Gravity.CENTER_HORIZONTAL);
-        card.setPadding(dp(18), dp(22), dp(18), dp(20));
-        card.setBackground(bg(Color.WHITE, dp(22), Color.rgb(232, 222, 198)));
-        root.addView(card, lp(-1, -2));
+    LinearLayout card = new LinearLayout(this);
+    card.setOrientation(LinearLayout.VERTICAL);
+    card.setGravity(Gravity.CENTER_HORIZONTAL);
+    card.setPadding(dp(14), dp(20), dp(14), dp(18));
+    card.setBackground(bg(darkGreen, dp(24), gold));
+    root.addView(card, lp(-1, -2));
 
-        TextView label = text("YOUR DAILY DHIKR", 12, gold, true);
-        label.setLetterSpacing(0.12f);
-        card.addView(label, lp(-1, -2));
+    TextView label = text("ВАШ ЗИКР", 13, gold, true);
+    card.addView(label, lp(-1, -2));
 
-        zikrView = text(zikrName, 21, green, true);
-        zikrView.setPadding(0, dp(10), 0, dp(2));
-        card.addView(zikrView, lp(-1, -2));
+    zikrView = text(zikrName, 22, ink, true);
+    zikrView.setPadding(0, dp(10), 0, dp(4));
+    card.addView(zikrView, lp(-1, -2));
 
-        arabicView = text(zikrArabic, 25, ink, false);
-        arabicView.setTypeface(Typeface.SERIF);
-        arabicView.setPadding(0, dp(2), 0, dp(20));
-        card.addView(arabicView, lp(-1, -2));
+    arabicView = text(zikrArabic, 29, gold, true);
+    arabicView.setTypeface(Typeface.SERIF, Typeface.BOLD);
+    arabicView.setPadding(0, dp(5), 0, dp(18));
+    card.addView(arabicView, lp(-1, -2));
 
-        targetView = text("", 13, ink, false);
-        card.addView(targetView, lp(-1, -2));
+    targetView = text("", 14, ink, true);
+    card.addView(targetView, lp(-1, -2));
 
-        countView = text("0", 68, darkGreen, true);
-        countView.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-        card.addView(countView, lp(-1, -2));
+    LinearLayout counterRow = new LinearLayout(this);
+    counterRow.setOrientation(LinearLayout.HORIZONTAL);
+    counterRow.setGravity(Gravity.CENTER);
+    card.addView(counterRow, lp(-1, dp(105)));
 
-        remainingView = text("", 14, Color.rgb(113, 117, 105), false);
-        remainingView.setPadding(0, 0, 0, dp(12));
-        card.addView(remainingView, lp(-1, -2));
+    Button back = button("‹", darkGreen, gold, 54);
+    counterRow.addView(back, new LinearLayout.LayoutParams(dp(58), dp(54)));
+    back.setOnClickListener(v -> chooseZikr());
 
-        progressView = text("", 17, gold, false);
-        progressView.setPadding(0, 0, 0, dp(18));
-        card.addView(progressView, lp(-1, -2));
+    countView = text("0", 64, gold, true);
+    counterRow.addView(countView,
+            new LinearLayout.LayoutParams(0, -2, 1));
 
-        Button countButton = button("＋  СЧИТАТЬ ЗИКР", green, Color.WHITE, 78);
-        countButton.setTextSize(18);
-        countButton.setOnClickListener(v -> {
-            count++;
-            save();
-            if (target > 0 && count == target)
-                Toast.makeText(this, "Цель достигнута! Ма ша Аллах!", Toast.LENGTH_LONG).show();
-        });
-        card.addView(countButton, lp(-1, dp(78)));
+    Button forward = button("›", darkGreen, gold, 54);
+    counterRow.addView(forward,
+            new LinearLayout.LayoutParams(dp(58), dp(54)));
+    forward.setOnClickListener(v -> chooseZikr());
 
-        Button changeZikr = button("Выбрать зикр", Color.rgb(239, 234, 220), green, 48);
-        changeZikr.setOnClickListener(v -> chooseZikr());
-        LinearLayout.LayoutParams p = lp(-1, dp(48)); p.topMargin = dp(14);
-        card.addView(changeZikr, p);
+    remainingView = text("", 14, ink, true);
+    remainingView.setPadding(0, 0, 0, dp(10));
+    card.addView(remainingView, lp(-1, -2));
 
-        Button reset = button("↻  Сбросить счётчик", Color.WHITE, green, 48);
-        reset.setOnClickListener(v -> new AlertDialog.Builder(this)
-                .setTitle("Сбросить счётчик?")
-                .setMessage("Текущий результат будет обнулён.")
-                .setNegativeButton("Отмена", null)
-                .setPositiveButton("Сбросить", (d, w) -> { count = 0; save(); })
-                .show());
-        addAction(root, reset);
+    progressView = text("", 19, gold, true);
+    progressView.setPadding(0, 0, 0, dp(14));
+    card.addView(progressView, lp(-1, -2));
 
-        Button targetButton = button("◎  Изменить цель", Color.WHITE, green, 48);
-        targetButton.setOnClickListener(v -> chooseTarget());
-        addAction(root, targetButton);
+    Button reset = button("Сброс", darkGreen, gold, 36);
+    LinearLayout.LayoutParams resetParams =
+            new LinearLayout.LayoutParams(dp(110), dp(38));
+    resetParams.bottomMargin = dp(14);
+    card.addView(reset, resetParams);
+    reset.setOnClickListener(v -> new AlertDialog.Builder(this)
+            .setTitle("Сбросить счётчик?")
+            .setMessage("Текущий результат будет обнулён.")
+            .setNegativeButton("Отмена", null)
+            .setPositiveButton("Сброс", (d, w) -> {
+                count = 0;
+                save();
+            }).show());
 
-        Button reminder = button("◷  Добавить напоминание", Color.WHITE, green, 48);
-        reminder.setOnClickListener(v -> chooseReminder());
-        addAction(root, reminder);
+    Button countButton = button(
+            "СЧИТАТЬ ЗИКР", gold, darkGreen, 76);
+    countButton.setTextSize(20);
+    card.addView(countButton, lp(-1, dp(76)));
+    countButton.setOnClickListener(v -> {
+        count++;
+        save();
+        if (target > 0 && count == target) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Цель достигнута!")
+                    .setMessage("Альхамдулиллях! Вы выполнили цель.")
+                    .setPositiveButton("Хорошо", null)
+                    .show();
+        }
+    });
 
-        Button cancelReminder = button("Отключить напоминание", Color.WHITE, green, 48);
-        cancelReminder.setOnClickListener(v -> cancelReminder());
-        addAction(root, cancelReminder);
+    Button changeZikr = button(
+            "＋  Добавить свой счётчик", darkGreen, gold, 50);
+    LinearLayout.LayoutParams changeParams = lp(-1, dp(50));
+    changeParams.topMargin = dp(12);
+    card.addView(changeZikr, changeParams);
+    changeZikr.setOnClickListener(v -> chooseZikr());
 
-        reminderView = text("", 13, ink, false);
-        reminderView.setPadding(0, dp(12), 0, 0);
-        root.addView(reminderView, lp(-1, -2));
+    Button targetButton = button(
+            "◎  Изменить цель", darkGreen, gold, 48);
+    addAction(root, targetButton);
+    targetButton.setOnClickListener(v -> chooseTarget());
 
-        setContentView(scroll);
-        updateReminderText();
-    }
+    Button reminder = button(
+            "◷  Добавить напоминание", darkGreen, gold, 48);
+    addAction(root, reminder);
+    reminder.setOnClickListener(v -> chooseReminder());
+
+    Button cancelReminder = button(
+            "Отключить напоминание", darkGreen, gold, 48);
+    addAction(root, cancelReminder);
+    cancelReminder.setOnClickListener(v -> cancelReminder());
+
+    reminderView = text("", 13, ink, true);
+    reminderView.setPadding(0, dp(12), 0, 0);
+    root.addView(reminderView, lp(-1, -2));
+
+    setContentView(scroll);
+    getWindow().setStatusBarColor(darkGreen);
+    getWindow().setNavigationBarColor(darkGreen);
+    updateReminderText();
+}
 
     private void addAction(LinearLayout root, Button button) {
         LinearLayout.LayoutParams p = lp(-1, dp(48));
