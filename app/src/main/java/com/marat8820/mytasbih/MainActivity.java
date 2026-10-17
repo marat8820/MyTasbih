@@ -60,141 +60,39 @@ public class MainActivity extends Activity {
     }
 
    
-private void buildUi() {
-    cream = Color.rgb(12, 65, 49);
-    green = Color.rgb(232, 195, 105);
-    darkGreen = Color.rgb(7, 45, 34);
-    gold = Color.rgb(232, 195, 105);
-    ink = Color.rgb(255, 250, 236);
+private void changeZikr(int direction) {
+    String[] names = {
+        "Субханаллах",
+        "Альхамдулиллях",
+        "Аллаху Акбар",
+        "Астагфируллах"
+    };
 
-    ScrollView scroll = new ScrollView(this);
-    scroll.setFillViewport(true);
-    scroll.setBackgroundColor(cream);
+    String[] arabic = {
+        "سُبْحَانَ اللَّهِ",
+        "الْحَمْدُ لِلَّهِ",
+        "اللَّهُ أَكْبَرُ",
+        "أَسْتَغْفِرُ اللَّهَ"
+    };
 
-    LinearLayout root = new LinearLayout(this);
-    root.setOrientation(LinearLayout.VERTICAL);
-    root.setGravity(Gravity.CENTER_HORIZONTAL);
-    root.setPadding(dp(18), dp(20), dp(18), dp(24));
-    scroll.addView(root);
+    int index = 0;
 
-    TextView title = text("📿  МОЙ ТАСБИХ", 25, gold, true);
-    title.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-    root.addView(title, lp(-1, dp(48)));
-
-    TextView subtitle = text(
-            "Листайте влево или вправо, чтобы сменить зикр",
-            13, ink, true);
-    subtitle.setPadding(0, 0, 0, dp(18));
-    root.addView(subtitle, lp(-1, -2));
-
-    LinearLayout card = new LinearLayout(this);
-    card.setOrientation(LinearLayout.VERTICAL);
-    card.setGravity(Gravity.CENTER_HORIZONTAL);
-    card.setPadding(dp(14), dp(20), dp(14), dp(18));
-    card.setBackground(bg(darkGreen, dp(24), gold));
-    root.addView(card, lp(-1, -2));
-
-    TextView label = text("ВАШ ЗИКР", 13, gold, true);
-    card.addView(label, lp(-1, -2));
-
-    zikrView = text(zikrName, 22, ink, true);
-    zikrView.setPadding(0, dp(10), 0, dp(4));
-    card.addView(zikrView, lp(-1, -2));
-
-    arabicView = text(zikrArabic, 29, gold, true);
-    arabicView.setTypeface(Typeface.SERIF, Typeface.BOLD);
-    arabicView.setPadding(0, dp(5), 0, dp(18));
-    card.addView(arabicView, lp(-1, -2));
-
-    targetView = text("", 14, ink, true);
-    card.addView(targetView, lp(-1, -2));
-
-    LinearLayout counterRow = new LinearLayout(this);
-    counterRow.setOrientation(LinearLayout.HORIZONTAL);
-    counterRow.setGravity(Gravity.CENTER);
-    card.addView(counterRow, lp(-1, dp(105)));
-
-    Button back = button("‹", darkGreen, gold, 54);
-    counterRow.addView(back, new LinearLayout.LayoutParams(dp(58), dp(54)));
-    back.setOnClickListener(v -> chooseZikr());
-
-    countView = text("0", 64, gold, true);
-    counterRow.addView(countView,
-            new LinearLayout.LayoutParams(0, -2, 1));
-
-    Button forward = button("›", darkGreen, gold, 54);
-    counterRow.addView(forward,
-            new LinearLayout.LayoutParams(dp(58), dp(54)));
-    forward.setOnClickListener(v -> chooseZikr());
-
-    remainingView = text("", 14, ink, true);
-    remainingView.setPadding(0, 0, 0, dp(10));
-    card.addView(remainingView, lp(-1, -2));
-
-    progressView = text("", 19, gold, true);
-    progressView.setPadding(0, 0, 0, dp(14));
-    card.addView(progressView, lp(-1, -2));
-
-    Button reset = button("Сброс", darkGreen, gold, 36);
-    LinearLayout.LayoutParams resetParams =
-            new LinearLayout.LayoutParams(dp(110), dp(38));
-    resetParams.bottomMargin = dp(14);
-    card.addView(reset, resetParams);
-    reset.setOnClickListener(v -> new AlertDialog.Builder(this)
-            .setTitle("Сбросить счётчик?")
-            .setMessage("Текущий результат будет обнулён.")
-            .setNegativeButton("Отмена", null)
-            .setPositiveButton("Сброс", (d, w) -> {
-                count = 0;
-                save();
-            }).show());
-
-    Button countButton = button(
-            "СЧИТАТЬ ЗИКР", gold, darkGreen, 76);
-    countButton.setTextSize(20);
-    card.addView(countButton, lp(-1, dp(76)));
-    countButton.setOnClickListener(v -> {
-        count++;
-        save();
-        if (target > 0 && count == target) {
-            new AlertDialog.Builder(this)
-                    .setTitle("Цель достигнута!")
-                    .setMessage("Альхамдулиллях! Вы выполнили цель.")
-                    .setPositiveButton("Хорошо", null)
-                    .show();
+    for (int i = 0; i < names.length; i++) {
+        if (names[i].equals(zikrName)) {
+            index = i;
+            break;
         }
-    });
+    }
 
-    Button changeZikr = button(
-            "＋  Добавить свой счётчик", darkGreen, gold, 50);
-    LinearLayout.LayoutParams changeParams = lp(-1, dp(50));
-    changeParams.topMargin = dp(12);
-    card.addView(changeZikr, changeParams);
-    changeZikr.setOnClickListener(v -> chooseZikr());
+    index = (index + direction + names.length) % names.length;
 
-    Button targetButton = button(
-            "◎  Изменить цель", darkGreen, gold, 48);
-    addAction(root, targetButton);
-    targetButton.setOnClickListener(v -> chooseTarget());
+    zikrName = names[index];
+    zikrArabic = arabic[index];
+    count = 0;
 
-    Button reminder = button(
-            "◷  Добавить напоминание", darkGreen, gold, 48);
-    addAction(root, reminder);
-    reminder.setOnClickListener(v -> chooseReminder());
-
-    Button cancelReminder = button(
-            "Отключить напоминание", darkGreen, gold, 48);
-    addAction(root, cancelReminder);
-    cancelReminder.setOnClickListener(v -> cancelReminder());
-
-    reminderView = text("", 13, ink, true);
-    reminderView.setPadding(0, dp(12), 0, 0);
-    root.addView(reminderView, lp(-1, -2));
-
-    setContentView(scroll);
-    getWindow().setStatusBarColor(darkGreen);
-    getWindow().setNavigationBarColor(darkGreen);
-    updateReminderText();
+    save();
+    buildUi();
+    updateUi();
 }
 
     private void addAction(LinearLayout root, Button button) {
@@ -202,7 +100,40 @@ private void buildUi() {
         p.topMargin = dp(9);
         root.addView(button, p);
     }
+private void changeZikr(int direction) {
+    String[] names = {
+        "Субханаллах",
+        "Альхамдулиллях",
+        "Аллаху Акбар",
+        "Астагфируллах"
+    };
 
+    String[] arabic = {
+        "سُبْحَانَ اللَّهِ",
+        "الْحَمْدُ لِلَّهِ",
+        "اللَّهُ أَكْبَرُ",
+        "أَسْتَغْفِرُ اللَّهَ"
+    };
+
+    int index = 0;
+
+    for (int i = 0; i < names.length; i++) {
+        if (names[i].equals(zikrName)) {
+            index = i;
+            break;
+        }
+    }
+
+    index = (index + direction + names.length) % names.length;
+
+    zikrName = names[index];
+    zikrArabic = arabic[index];
+    count = 0;
+
+    save();
+    buildUi();
+    updateUi();
+}
     private void chooseZikr() {
         String[] names = {"Субханаллах", "Альхамдулиллях", "Аллаху Акбар", "Астагфируллах"};
         String[] arabic = {"سُبْحَانَ اللَّهِ", "الْحَمْدُ لِلَّهِ", "اللَّهُ أَكْبَرُ", "أَسْتَغْفِرُ اللَّهَ"};
