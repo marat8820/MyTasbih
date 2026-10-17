@@ -35,6 +35,31 @@ jobs:
           yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses || true
           "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --install "platforms;android-35" "build-tools;35.0.0"
 
+      - name: Install ImageMagick
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick
+
+      - name: Generate launcher icons
+        run: |
+          set -e
+          if [ ! -f tasbih_icon.png ]; then
+            echo "ERROR: tasbih_icon.png was not found in the repository root."
+            exit 1
+          fi
+
+          mkdir -p app/src/main/res/mipmap-mdpi
+          mkdir -p app/src/main/res/mipmap-hdpi
+          mkdir -p app/src/main/res/mipmap-xhdpi
+          mkdir -p app/src/main/res/mipmap-xxhdpi
+          mkdir -p app/src/main/res/mipmap-xxxhdpi
+
+          convert tasbih_icon.png -resize 48x48 app/src/main/res/mipmap-mdpi/ic_launcher.png
+          convert tasbih_icon.png -resize 72x72 app/src/main/res/mipmap-hdpi/ic_launcher.png
+          convert tasbih_icon.png -resize 96x96 app/src/main/res/mipmap-xhdpi/ic_launcher.png
+          convert tasbih_icon.png -resize 144x144 app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+          convert tasbih_icon.png -resize 192x192 app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+
       - name: Build APK
         run: gradle assembleDebug
 
