@@ -28,11 +28,11 @@ import java.util.Locale;
 public class MainActivity extends Activity {
     static final String PREFS = "MyTasbihPrefs";
     static final String CHANNEL_ID = "mytasbih_reminders";
-    private final int cream = Color.rgb(250, 247, 239);
-    private final int green = Color.rgb(35, 91, 66);
-    private final int darkGreen = Color.rgb(24, 66, 48);
-    private final int gold = Color.rgb(190, 151, 75);
-    private final int ink = Color.rgb(55, 61, 52);
+    private int cream = Color.rgb(250, 247, 239);
+    private int green = Color.rgb(35, 91, 66);
+    private int darkGreen = Color.rgb(24, 66, 48);
+    private int gold = Color.rgb(190, 151, 75);
+    private int ink = Color.rgb(55, 61, 52);
 
     private SharedPreferences prefs;
     private TextView countView, targetView, remainingView, progressView, zikrView, arabicView, reminderView;
