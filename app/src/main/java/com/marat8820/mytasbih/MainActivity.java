@@ -17,7 +17,6 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.view.Gravity;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -58,30 +57,22 @@ public class MainActivity extends Activity {
         super.onCreate(state);
 
         prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
-
         count = prefs.getInt("count", 0);
         target = prefs.getInt("target", 33);
         zikrName = prefs.getString("zikr_name", "Субханаллах");
-        zikrArabic = prefs.getString(
-                "zikr_arabic", "سُبْحَانَ اللَّهِ");
+        zikrArabic = prefs.getString("zikr_arabic", "سُبْحَانَ اللَّهِ");
 
         ReminderReceiver.createChannel(this);
         askNotificationPermission();
-
         buildUi();
         updateUi();
     }
 
     private void askNotificationPermission() {
         if (Build.VERSION.SDK_INT >= 33
-                && checkSelfPermission(
-                Manifest.permission.POST_NOTIFICATIONS)
+                && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
                 != PackageManager.PERMISSION_GRANTED) {
-
-            requestPermissions(
-                    new String[]{
-                            Manifest.permission.POST_NOTIFICATIONS
-                    }, 701);
+            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 701);
         }
     }
 
@@ -102,14 +93,12 @@ public class MainActivity extends Activity {
         root.setPadding(dp(18), dp(16), dp(18), dp(20));
         scroll.addView(root);
 
-        TextView title = text(
-                "📿  МОЙ ТАСБИХ", 25, gold, true);
+        TextView title = text("📿  МОЙ ТАСБИХ", 25, gold);
         title.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         root.addView(title, lp(-1, dp(48)));
 
         TextView subtitle = text(
-                "Листайте влево или вправо, чтобы сменить зикр",
-                13, ink, true);
+                "Листайте влево или вправо, чтобы сменить зикр", 13, ink);
         root.addView(subtitle, lp(-1, dp(38)));
 
         LinearLayout card = new LinearLayout(this);
@@ -119,17 +108,16 @@ public class MainActivity extends Activity {
         card.setBackground(bg(darkGreen, dp(24), gold));
         root.addView(card, lp(-1, -2));
 
-        TextView label = text("ВАШ ЗИКР", 13, gold, true);
-        card.addView(label, lp(-1, dp(28)));
+        card.addView(text("ВАШ ЗИКР", 13, gold), lp(-1, dp(28)));
 
-        zikrView = text(zikrName, 22, ink, true);
+        zikrView = text(zikrName, 22, ink);
         card.addView(zikrView, lp(-1, dp(42)));
 
-        arabicView = text(zikrArabic, 29, gold, true);
+        arabicView = text(zikrArabic, 29, gold);
         arabicView.setTypeface(Typeface.SERIF, Typeface.BOLD);
         card.addView(arabicView, lp(-1, dp(54)));
 
-        targetView = text("", 14, ink, true);
+        targetView = text("", 14, ink);
         card.addView(targetView, lp(-1, dp(28)));
 
         LinearLayout counterRow = new LinearLayout(this);
@@ -138,39 +126,31 @@ public class MainActivity extends Activity {
         card.addView(counterRow, lp(-1, dp(100)));
 
         Button back = button("‹", darkGreen, gold, 52);
-        counterRow.addView(
-                back, new LinearLayout.LayoutParams(
-                        dp(52), dp(52)));
+        counterRow.addView(back, new LinearLayout.LayoutParams(dp(52), dp(52)));
         back.setOnClickListener(v -> changeZikr(-1));
 
-        countView = text("0", 60, gold, true);
-        counterRow.addView(
-                countView,
-                new LinearLayout.LayoutParams(0, -2, 1));
+        countView = text("0", 60, gold);
+        counterRow.addView(countView, new LinearLayout.LayoutParams(0, -2, 1));
 
         Button forward = button("›", darkGreen, gold, 52);
-        counterRow.addView(
-                forward, new LinearLayout.LayoutParams(
-                        dp(52), dp(52)));
+        counterRow.addView(forward, new LinearLayout.LayoutParams(dp(52), dp(52)));
         forward.setOnClickListener(v -> changeZikr(1));
 
-        remainingView = text("", 14, ink, true);
+        remainingView = text("", 14, ink);
         card.addView(remainingView, lp(-1, dp(28)));
 
-        progressView = text("", 17, gold, true);
+        progressView = text("", 17, gold);
         card.addView(progressView, lp(-1, dp(36)));
 
-        Button reset = button("Сброс", darkGreen, gold, 36);
+        Button reset = button("Сброс", darkGreen, gold, 38);
         LinearLayout.LayoutParams resetParams =
                 new LinearLayout.LayoutParams(dp(100), dp(38));
         resetParams.bottomMargin = dp(8);
         card.addView(reset, resetParams);
-
         reset.setOnClickListener(v ->
                 new AlertDialog.Builder(this)
                         .setTitle("Сбросить счётчик?")
-                        .setMessage(
-                                "Текущий результат будет обнулён.")
+                        .setMessage("Текущий результат будет обнулён.")
                         .setNegativeButton("Отмена", null)
                         .setPositiveButton("Сброс", (d, w) -> {
                             count = 0;
@@ -178,63 +158,49 @@ public class MainActivity extends Activity {
                         })
                         .show());
 
-        Button countButton = button(
-                "СЧИТАТЬ ЗИКР", gold, darkGreen, 76);
+        Button countButton = button("СЧИТАТЬ ЗИКР", gold, darkGreen, 76);
         countButton.setTextSize(20);
-
-        LinearLayout.LayoutParams countParams =
-                lp(-1, dp(76));
+        LinearLayout.LayoutParams countParams = lp(-1, dp(76));
         countParams.topMargin = dp(16);
         root.addView(countButton, countParams);
-
         countButton.setOnClickListener(v -> {
             count++;
             save();
-
             if (target > 0 && count == target) {
                 new AlertDialog.Builder(this)
                         .setTitle("Цель достигнута!")
-                        .setMessage(
-                                "Альхамдулиллях! Вы выполнили цель.")
+                        .setMessage("Альхамдулиллях! Вы выполнили цель.")
                         .setPositiveButton("Хорошо", null)
                         .show();
             }
         });
 
-        Button addZikr = button(
-                "＋  Выбрать зикр", darkGreen, gold, 50);
-        LinearLayout.LayoutParams addParams =
-                lp(-1, dp(50));
+        Button addZikr = button("＋  Выбрать зикр", darkGreen, gold, 50);
+        LinearLayout.LayoutParams addParams = lp(-1, dp(50));
         addParams.topMargin = dp(10);
         root.addView(addZikr, addParams);
         addZikr.setOnClickListener(v -> chooseZikr());
 
-        Button targetButton = button(
-                "◎  Изменить цель", darkGreen, gold, 48);
+        Button targetButton = button("◎  Изменить цель", darkGreen, gold, 48);
         addAction(root, targetButton);
         targetButton.setOnClickListener(v -> chooseTarget());
 
-        Button reminder = button(
-                "◷  Добавить напоминание",
-                darkGreen, gold, 48);
+        Button reminder = button("◷  Добавить напоминание", darkGreen, gold, 48);
         addAction(root, reminder);
         reminder.setOnClickListener(v -> chooseReminder());
 
-        Button cancelReminderButton = button(
-                "Отключить последнее напоминание",
-                darkGreen, gold, 48);
+        Button cancelReminderButton =
+                button("Отключить последнее напоминание", darkGreen, gold, 48);
         addAction(root, cancelReminderButton);
-        cancelReminderButton.setOnClickListener(
-                v -> cancelReminder());
+        cancelReminderButton.setOnClickListener(v -> cancelReminder());
 
-        reminderView = text("", 13, ink, true);
+        reminderView = text("", 13, ink);
         reminderView.setPadding(0, dp(10), 0, 0);
         root.addView(reminderView, lp(-1, dp(35)));
 
         setContentView(scroll);
         getWindow().setStatusBarColor(darkGreen);
         getWindow().setNavigationBarColor(darkGreen);
-
         updateReminderText();
     }
 
@@ -245,13 +211,7 @@ public class MainActivity extends Activity {
     }
 
     private void changeZikr(int direction) {
-        String[] names = {
-                "Субханаллах",
-                "Альхамдулиллях",
-                "Аллаху Акбар",
-                "Астагфируллах"
-        };
-
+        String[] names = {"Субханаллах", "Альхамдулиллях", "Аллаху Акбар", "Астагфируллах"};
         String[] arabic = {
                 "سُبْحَانَ اللَّهِ",
                 "الْحَمْدُ لِلَّهِ",
@@ -260,7 +220,6 @@ public class MainActivity extends Activity {
         };
 
         int index = 0;
-
         for (int i = 0; i < names.length; i++) {
             if (names[i].equals(zikrName)) {
                 index = i;
@@ -268,26 +227,18 @@ public class MainActivity extends Activity {
             }
         }
 
-        index = (index + direction + names.length)
-                % names.length;
-
+        index = (index + direction + names.length) % names.length;
         zikrName = names[index];
         zikrArabic = arabic[index];
-        count = 0;
 
+        // Не сбрасываем count при переключении зикра.
         save();
         buildUi();
         updateUi();
     }
 
     private void chooseZikr() {
-        String[] names = {
-                "Субханаллах",
-                "Альхамдулиллях",
-                "Аллаху Акбар",
-                "Астагфируллах"
-        };
-
+        String[] names = {"Субханаллах", "Альхамдулиллях", "Аллаху Акбар", "Астагфируллах"};
         String[] arabic = {
                 "سُبْحَانَ اللَّهِ",
                 "الْحَمْدُ لِلَّهِ",
@@ -300,7 +251,7 @@ public class MainActivity extends Activity {
                 .setItems(names, (d, which) -> {
                     zikrName = names[which];
                     zikrArabic = arabic[which];
-                    count = 0;
+                    // Не сбрасываем count при выборе зикра.
                     save();
                     buildUi();
                     updateUi();
@@ -309,9 +260,7 @@ public class MainActivity extends Activity {
     }
 
     private void chooseTarget() {
-        String[] labels = {
-                "33", "99", "100", "500", "1000", "Без цели"
-        };
+        String[] labels = {"33", "99", "100", "500", "1000", "Без цели"};
         int[] values = {33, 99, 100, 500, 1000, 0};
 
         new AlertDialog.Builder(this)
@@ -333,90 +282,67 @@ public class MainActivity extends Activity {
             next.set(Calendar.SECOND, 0);
             next.set(Calendar.MILLISECOND, 0);
 
-            if (next.getTimeInMillis()
-                    <= System.currentTimeMillis()) {
+            if (next.getTimeInMillis() <= System.currentTimeMillis()) {
                 next.add(Calendar.DAY_OF_YEAR, 1);
             }
 
             int id = prefs.getInt("next_reminder_id", 1000);
-
-            Intent intent = new Intent(
-                    this, ReminderReceiver.class);
+            Intent intent = new Intent(this, ReminderReceiver.class);
             intent.putExtra("reminder_id", id);
 
             PendingIntent pi = PendingIntent.getBroadcast(
                     this, id, intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
-                            | immutableFlag());
+                    PendingIntent.FLAG_UPDATE_CURRENT | immutableFlag());
 
-            AlarmManager alarms =
-                    (AlarmManager) getSystemService(ALARM_SERVICE);
-
+            AlarmManager alarms = (AlarmManager) getSystemService(ALARM_SERVICE);
             if (alarms == null) {
-                Toast.makeText(this,
-                        "Не удалось настроить напоминание",
+                Toast.makeText(this, "Не удалось настроить напоминание",
                         Toast.LENGTH_LONG).show();
                 return;
             }
 
-            if (Build.VERSION.SDK_INT >= 31
-                    && !alarms.canScheduleExactAlarms()) {
-
+            if (Build.VERSION.SDK_INT >= 31 && !alarms.canScheduleExactAlarms()) {
                 new AlertDialog.Builder(this)
                         .setTitle("Разрешить точные напоминания?")
-                        .setMessage(
-                                "Без разрешения напоминание может прийти с задержкой.")
-                        .setNegativeButton(
-                                "Без точного времени",
+                        .setMessage("Без разрешения напоминание может прийти с задержкой.")
+                        .setNegativeButton("Без точного времени",
                                 (d, w) -> scheduleInexact(
-                                        alarms,
-                                        next.getTimeInMillis(),
-                                        pi, id, hour, minute))
-                        .setPositiveButton(
-                                "Открыть настройки", (d, w) -> {
-                                    Intent settings = new Intent(
-                                            Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
-                                    startActivity(settings);
-                                    scheduleInexact(
-                                            alarms,
-                                            next.getTimeInMillis(),
-                                            pi, id, hour, minute);
-                                })
+                                        alarms, next.getTimeInMillis(), pi, id, hour, minute))
+                        .setPositiveButton("Открыть настройки", (d, w) -> {
+                            Intent settings = new Intent(
+                                    Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM);
+                            startActivity(settings);
+                            scheduleInexact(
+                                    alarms, next.getTimeInMillis(), pi, id, hour, minute);
+                        })
                         .show();
             } else {
                 try {
                     if (Build.VERSION.SDK_INT >= 23) {
                         alarms.setExactAndAllowWhileIdle(
-                                AlarmManager.RTC_WAKEUP,
-                                next.getTimeInMillis(), pi);
+                                AlarmManager.RTC_WAKEUP, next.getTimeInMillis(), pi);
                     } else {
-                        alarms.setExact(
-                                AlarmManager.RTC_WAKEUP,
+                        alarms.setExact(AlarmManager.RTC_WAKEUP,
                                 next.getTimeInMillis(), pi);
                     }
-
                     storeReminder(id, hour, minute);
                 } catch (SecurityException ex) {
                     scheduleInexact(
-                            alarms, next.getTimeInMillis(),
-                            pi, id, hour, minute);
+                            alarms, next.getTimeInMillis(), pi, id, hour, minute);
                 }
             }
-        }, now.get(Calendar.HOUR_OF_DAY),
-                now.get(Calendar.MINUTE), true).show();
+        }, now.get(Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), true).show();
     }
 
     private void scheduleInexact(
-            AlarmManager alarms, long time,
-            PendingIntent pi, int id, int hour, int minute) {
+            AlarmManager alarms, long time, PendingIntent pi,
+            int id, int hour, int minute) {
         try {
             alarms.setInexactRepeating(
-                    AlarmManager.RTC_WAKEUP,
-                    time, AlarmManager.INTERVAL_DAY, pi);
+                    AlarmManager.RTC_WAKEUP, time, AlarmManager.INTERVAL_DAY, pi);
             storeReminder(id, hour, minute);
         } catch (SecurityException ex) {
-            Toast.makeText(this,
-                    "Не удалось установить напоминание",
+            Toast.makeText(this, "Не удалось установить напоминание",
                     Toast.LENGTH_LONG).show();
         }
     }
@@ -430,71 +356,51 @@ public class MainActivity extends Activity {
                 .apply();
 
         updateReminderText();
-
         Toast.makeText(this,
                 String.format(Locale.getDefault(),
-                        "Напоминание установлено: %02d:%02d",
-                        hour, minute),
+                        "Напоминание установлено: %02d:%02d", hour, minute),
                 Toast.LENGTH_LONG).show();
     }
 
     private void cancelReminder() {
         int id = prefs.getInt("next_reminder_id", 1000) - 1;
-
-        while (id >= 1000
-                && !prefs.getBoolean("reminder_enabled_" + id, false)) {
+        while (id >= 1000 && !prefs.getBoolean("reminder_enabled_" + id, false)) {
             id--;
         }
 
         if (id < 1000) {
-            Toast.makeText(this,
-                    "Нет активных напоминаний",
+            Toast.makeText(this, "Нет активных напоминаний",
                     Toast.LENGTH_SHORT).show();
             return;
         }
 
-        Intent intent = new Intent(
-                this, ReminderReceiver.class);
-
+        Intent intent = new Intent(this, ReminderReceiver.class);
         PendingIntent pi = PendingIntent.getBroadcast(
                 this, id, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT
-                        | immutableFlag());
+                PendingIntent.FLAG_UPDATE_CURRENT | immutableFlag());
 
-        AlarmManager alarms =
-                (AlarmManager) getSystemService(ALARM_SERVICE);
-
+        AlarmManager alarms = (AlarmManager) getSystemService(ALARM_SERVICE);
         if (alarms != null) {
             alarms.cancel(pi);
         }
 
-        prefs.edit()
-                .putBoolean("reminder_enabled_" + id, false)
-                .apply();
-
+        prefs.edit().putBoolean("reminder_enabled_" + id, false).apply();
         updateReminderText();
-
-        Toast.makeText(this,
-                "Последнее напоминание отключено",
+        Toast.makeText(this, "Последнее напоминание отключено",
                 Toast.LENGTH_SHORT).show();
     }
 
     private void updateReminderText() {
-        if (reminderView == null || prefs == null) {
-            return;
-        }
+        if (reminderView == null || prefs == null) return;
 
         int lastId = prefs.getInt("next_reminder_id", 1000) - 1;
-
         while (lastId >= 1000
-                && !prefs.getBoolean(
-                "reminder_enabled_" + lastId, false)) {
+                && !prefs.getBoolean("reminder_enabled_" + lastId, false)) {
             lastId--;
         }
 
         if (lastId >= 1000) {
-            reminderView.setText(String.format(
-                    Locale.getDefault(),
+            reminderView.setText(String.format(Locale.getDefault(),
                     "Последнее напоминание: %02d:%02d",
                     prefs.getInt("reminder_hour_" + lastId, 20),
                     prefs.getInt("reminder_minute_" + lastId, 0)));
@@ -504,8 +410,7 @@ public class MainActivity extends Activity {
     }
 
     private int immutableFlag() {
-        return Build.VERSION.SDK_INT >= 23
-                ? PendingIntent.FLAG_IMMUTABLE : 0;
+        return Build.VERSION.SDK_INT >= 23 ? PendingIntent.FLAG_IMMUTABLE : 0;
     }
 
     private void save() {
@@ -515,32 +420,23 @@ public class MainActivity extends Activity {
                 .putString("zikr_name", zikrName)
                 .putString("zikr_arabic", zikrArabic)
                 .apply();
-
         updateUi();
     }
 
     private void updateUi() {
-        if (countView == null) {
-            return;
-        }
+        if (countView == null) return;
 
         countView.setText(String.valueOf(count));
-
-        targetView.setText(
-                "ЦЕЛЬ  •  " + (target == 0 ? "∞" : target));
-
-        remainingView.setText(
-                target == 0
-                        ? "Продолжайте в своём темпе"
-                        : Math.max(0, target - count) + " осталось");
+        targetView.setText("ЦЕЛЬ  •  " + (target == 0 ? "∞" : target));
+        remainingView.setText(target == 0
+                ? "Продолжайте в своём темпе"
+                : Math.max(0, target - count) + " осталось");
 
         int filled = target == 0
                 ? count % 10
-                : Math.min(10,
-                (int) (count * 10.0 / Math.max(1, target)));
+                : Math.min(10, (int) (count * 10.0 / Math.max(1, target)));
 
         StringBuilder dots = new StringBuilder();
-
         for (int i = 0; i < 10; i++) {
             dots.append(i < filled ? "● " : "○ ");
         }
@@ -550,19 +446,17 @@ public class MainActivity extends Activity {
         arabicView.setText(zikrArabic);
     }
 
-    private TextView text(
-            String value, int size, int color, boolean centered) {
+    private TextView text(String value, int size, int color) {
         TextView t = new TextView(this);
         t.setText(value);
         t.setTextColor(color);
         t.setTextSize(size);
-        t.setGravity(centered ? Gravity.CENTER : Gravity.CENTER);
+        t.setGravity(Gravity.CENTER);
         return t;
     }
 
     private Button button(
-            String value, int background,
-            int foreground, int heightDp) {
+            String value, int background, int foreground, int heightDp) {
         Button b = new Button(this);
         b.setText(value);
         b.setAllCaps(false);
@@ -574,15 +468,12 @@ public class MainActivity extends Activity {
         shape.setColor(background);
         shape.setCornerRadius(dp(15));
         shape.setStroke(dp(1),
-                background == green
-                        ? gold : Color.rgb(230, 224, 207));
-
+                background == green ? gold : Color.rgb(230, 224, 207));
         b.setBackground(shape);
         return b;
     }
 
-    private GradientDrawable bg(
-            int color, int radius, int stroke) {
+    private GradientDrawable bg(int color, int radius, int stroke) {
         GradientDrawable d = new GradientDrawable();
         d.setColor(color);
         d.setCornerRadius(radius);
@@ -590,8 +481,7 @@ public class MainActivity extends Activity {
         return d;
     }
 
-    private LinearLayout.LayoutParams lp(
-            int width, int height) {
+    private LinearLayout.LayoutParams lp(int width, int height) {
         return new LinearLayout.LayoutParams(width, height);
     }
 
